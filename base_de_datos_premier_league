@@ -1,0 +1,281 @@
+-- Database: base_de_datos_premier_league
+
+-- DROP DATABASE IF EXISTS base_de_datos_premier_league;
+
+CREATE DATABASE base_de_datos_premier_league
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'English_United States.1252'
+    LC_CTYPE = 'English_United States.1252'
+    LOCALE_PROVIDER = 'libc'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+CREATE TABLE ciudad_equipo (
+    id_ciudad_equipo INTEGER,
+    estado_ciudad_equipo INTEGER
+);
+
+CREATE TABLE equipo (
+    id_equipo INTEGER,
+    id_ciudad_equipo INTEGER,
+    nombre_equipo VARCHAR(20),
+    fecha_fundacion DATE,
+	ultimo_campeonato DATE,
+	numero_de_campeonatos INTEGER,
+	apodo_equipo VARCHAR(20)
+);
+
+CREATE TABLE torneo (
+    id_torneo INTEGER,
+    campeon_torneo VARCHAR(20),
+	subcampeon VARCHAR(20),
+	goleador_torneo VARCHAR(40),
+	mvp_torneo VARCHAR(40),
+	temporada_torneo DATE
+);
+
+CREATE TABLE desempenio_torneo (
+    id_torneo INTEGER,
+    id_equipo INTEGER,
+    posicion INTEGER,
+    goles_favor INTEGER,
+	goles_contra INTEGER,
+	victorias INTEGER,
+	empates INTEGER,
+	derrotas INTEGER,
+    puntos_totales INTEGER
+);
+
+CREATE TABLE arquitecto_estadio (
+    id_arquitecto INTEGER,
+    primer_nombre_arqui VARCHAR(20),
+	segundo_nombre_arqui VARCHAR(20),
+	primer_apellido_arqui VARCHAR(20),
+	segundo_apellido_arqui  VARCHAR(20)
+);
+
+CREATE TABLE pasto (
+    id_pasto INTEGER,
+    tipo_pasto VARCHAR(15)
+);
+
+CREATE TABLE direccion_estadio (
+    id_direccion INTEGER,
+    numero_estadio INTEGER,
+	calle_estadio VARCHAR(30),
+	alcaldia_estadio VARCHAR(30),
+	ciudad_estadio VARCHAR(30)
+	
+);
+
+CREATE TABLE estadio (
+    id_estadio INTEGER,
+    id_arquitecto INTEGER,
+	id_pasto INTEGER,
+	id_direccion INTEGER,
+	nombre_estadio VARCHAR(30),
+	fecha_ignauguracion DATE,
+	capacidad_total INTEGER
+);
+
+CREATE TABLE clima (
+    id_clima INTEGER,
+    tipo_clima VARCHAR(20)
+);
+
+CREATE TABLE partido (
+    id_partido INTEGER,
+    id_estadio INTEGER,
+    id_equipo_visita INTEGER,
+    id_equipo_local INTEGER,
+    id_clima INTEGER,
+	goles_local INTEGER,
+	goles_visita INTEGER,
+	fecha_partido DATE,
+	hora_partido TIME,
+	temporada_partido DATE,
+	temperatura FLOAT,
+	humedad INTEGER
+);
+
+CREATE TABLE entrenador (
+    id_entrenador INTEGER,
+    id_equipo INTEGER,
+    primer_nombre_entrenador VARCHAR(20),
+	segundo_nombre_entrenador VARCHAR(20),
+	primer_apellido_entrenador VARCHAR(20),
+	segundo_apellido_entrenador VARCHAR(20),
+	apodo_ent VARCHAR(20),
+	fecha_nacimient_ent DATE,
+	tipo_sangre_ent VARCHAR(5),
+	estatura_ent INTEGER,
+	nacionalidad_ent VARCHAR(20)
+);
+
+CREATE TABLE estadisticas_entrenador_partido (
+    id_entrenador INTEGER,
+    id_partido INTEGER,
+    tarjetas_amarillas_entrenador INTEGER,
+	tarjetas_rojas_entrenador BOOLEAN,
+	numero_cambios INTEGER
+);
+
+CREATE TABLE estadisticas_estadio_partido (
+    id_estadio INTEGER,
+	id_partido INTEGER,
+	asistencia INTEGER,
+	wifi_disponible BOOLEAN,
+	comida_disponible BOOLEAN
+);
+
+CREATE TABLE jugador (
+    id_jugador INTEGER,
+    id_equipo INTEGER,
+    primer_nombre VARCHAR(20),
+	segundo_nombre VARCHAR(20),
+	primer_apellido VARCHAR(20),
+	segundo_apellido VARCHAR(20),
+	apodo_jugador VARCHAR(20),
+	fecha_nacimient DATE,
+	tipo_sangre VARCHAR(5),
+	estatura INTEGER,
+	nacionalidad VARCHAR(20)
+);
+
+CREATE TABLE estadisticas_jugador_partido (
+    id_jugador INTEGER,
+    id_partido INTEGER,
+	es_titular BOOLEAN,
+	goles_partido INTEGER,
+	km_recorridos INTEGER,
+	minutos_jugados_partido INTEGER,
+	pases_totales INTEGER,
+	pases_efectivos INTEGER,
+	posicion_partido VARCHAR(15),
+	tarjetas_amarillas INTEGER,
+	tarjeta_roja BOOLEAN,
+	numero_camiseta INTEGER
+);
+
+CREATE TABLE lesion (
+	id_lesion INTEGER,
+	area_corporal VARCHAR(20),
+	tiempo_recuperacion INTEGER
+);
+
+CREATE TABLE cirugia (
+	id_cirugia INTEGER,
+	tipo_cirugia VARCHAR(20)
+);
+
+CREATE TABLE estatus_lesion (
+    id_jugador INTEGER,
+    id_lesion INTEGER,
+	id_cirugia INTEGER,
+	temporada_lesion DATE,
+	esta_lesionado BOOLEAN
+);
+
+--llaves primarias
+ALTER TABLE ciudad_equipo ADD PRIMARY KEY (id_ciudad_equipo);
+ALTER TABLE equipo ADD PRIMARY KEY (id_equipo);
+ALTER TABLE torneo ADD PRIMARY KEY (id_torneo);
+ALTER TABLE desempenio_torneo ADD PRIMARY KEY (id_torneo, id_equipo);
+ALTER TABLE arquitecto_estadio ADD PRIMARY KEY (id_arquitecto);
+ALTER TABLE pasto ADD PRIMARY KEY (id_pasto);
+ALTER TABLE direccion_estadio ADD PRIMARY KEY (id_direccion);
+ALTER TABLE estadio ADD PRIMARY KEY (id_estadio);
+ALTER TABLE clima ADD PRIMARY KEY (id_clima);
+ALTER TABLE partido ADD PRIMARY KEY (id_partido);
+ALTER TABLE entrenador ADD PRIMARY KEY (id_entrenador);
+ALTER TABLE estadisticas_entrenador_partido ADD PRIMARY KEY (id_entrenador, id_partido);
+ALTER TABLE estadisticas_estadio_partido ADD PRIMARY KEY (id_estadio, id_partido);
+ALTER TABLE jugador ADD PRIMARY KEY (id_jugador);
+ALTER TABLE estadisticas_jugador_partido ADD PRIMARY KEY (id_jugador, id_partido);
+ALTER TABLE lesion ADD PRIMARY KEY (id_lesion);
+ALTER TABLE cirugia ADD PRIMARY KEY (id_cirugia);
+ALTER TABLE estatus_lesion ADD PRIMARY KEY (id_jugador, id_lesion, id_cirugia);
+--llaves foraneas
+ALTER TABLE equipo ADD FOREIGN KEY (id_ciudad_equipo) REFERENCES ciudad_equipo(id_ciudad_equipo);
+ALTER TABLE desempenio_torneo ADD FOREIGN KEY (id_torneo) REFERENCES torneo(id_torneo);
+ALTER TABLE desempenio_torneo ADD FOREIGN KEY (id_equipo) REFERENCES equipo(id_equipo);
+ALTER TABLE estadio ADD FOREIGN KEY (id_arquitecto) REFERENCES arquitecto_estadio(id_arquitecto);
+ALTER TABLE estadio ADD FOREIGN KEY (id_pasto) REFERENCES pasto(id_pasto);
+ALTER TABLE estadio ADD FOREIGN KEY (id_direccion) REFERENCES direccion_estadio(id_direccion);
+ALTER TABLE partido ADD FOREIGN KEY (id_estadio) REFERENCES estadio(id_estadio);
+ALTER TABLE partido ADD FOREIGN KEY (id_equipo_visita) REFERENCES equipo(id_equipo);
+ALTER TABLE partido ADD FOREIGN KEY (id_equipo_local) REFERENCES equipo(id_equipo);
+ALTER TABLE partido ADD FOREIGN KEY (id_clima) REFERENCES clima(id_clima);
+ALTER TABLE entrenador ADD FOREIGN KEY (id_equipo) REFERENCES equipo(id_equipo);
+ALTER TABLE estadisticas_entrenador_partido ADD FOREIGN KEY (id_entrenador) REFERENCES entrenador(id_entrenador);
+ALTER TABLE estadisticas_entrenador_partido ADD FOREIGN KEY (id_partido) REFERENCES partido(id_partido);
+ALTER TABLE estadisticas_estadio_partido ADD FOREIGN KEY (id_estadio) REFERENCES estadio(id_estadio);
+ALTER TABLE estadisticas_estadio_partido ADD FOREIGN KEY (id_partido) REFERENCES partido(id_partido);
+ALTER TABLE jugador ADD FOREIGN KEY (id_equipo) REFERENCES equipo(id_equipo);
+ALTER TABLE estadisticas_jugador_partido ADD FOREIGN KEY (id_jugador) REFERENCES jugador(id_jugador);
+ALTER TABLE estadisticas_jugador_partido ADD FOREIGN KEY (id_partido) REFERENCES partido(id_partido);
+ALTER TABLE estatus_lesion ADD FOREIGN KEY (id_jugador) REFERENCES jugador(id_jugador);
+ALTER TABLE estatus_lesion ADD FOREIGN KEY (id_lesion) REFERENCES lesion(id_lesion);
+ALTER TABLE estatus_lesion ADD FOREIGN KEY (id_cirugia) REFERENCES cirugia(id_cirugia);
+
+--RESTRICCIONES
+ALTER TABLE equipo ALTER COLUMN nombre_equipo SET NOT NULL;
+ALTER TABLE equipo ALTER COLUMN fecha_fundacion SET NOT NULL;
+ALTER TABLE torneo ALTER COLUMN temporada_torneo SET NOT NULL;
+ALTER TABLE desempenio_torneo ALTER COLUMN posicion SET NOT NULL;
+ALTER TABLE desempenio_torneo ALTER COLUMN goles_favor SET NOT NULL;
+ALTER TABLE desempenio_torneo ALTER COLUMN goles_contra SET NOT NULL;
+ALTER TABLE desempenio_torneo ALTER COLUMN victorias SET NOT NULL;
+ALTER TABLE desempenio_torneo ALTER COLUMN empates SET NOT NULL;
+ALTER TABLE desempenio_torneo ALTER COLUMN derrotas SET NOT NULL;
+ALTER TABLE desempenio_torneo ALTER COLUMN puntos_totales SET NOT NULL;
+ALTER TABLE arquitecto_estadio ALTER COLUMN primer_nombre_arqui SET NOT NULL;
+ALTER TABLE arquitecto_estadio ALTER COLUMN primer_apellido_arqui SET NOT NULL;
+ALTER TABLE pasto ALTER COLUMN tipo_pasto SET NOT NULL;
+ALTER TABLE direccion_estadio ALTER COLUMN calle_estadio SET NOT NULL;
+ALTER TABLE direccion_estadio ALTER COLUMN ciudad_estadio SET NOT NULL;
+ALTER TABLE estadio ALTER COLUMN nombre_estadio SET NOT NULL;
+ALTER TABLE estadio ALTER COLUMN capacidad_total SET NOT NULL;
+ALTER TABLE clima ALTER COLUMN tipo_clima SET NOT NULL;
+ALTER TABLE partido ALTER COLUMN fecha_partido SET NOT NULL;
+ALTER TABLE partido ALTER COLUMN goles_local SET NOT NULL;
+ALTER TABLE partido ALTER COLUMN goles_visita SET NOT NULL;
+ALTER TABLE entrenador ALTER COLUMN primer_nombre_entrenador SET NOT NULL;
+ALTER TABLE entrenador ALTER COLUMN primer_apellido_entrenador SET NOT NULL;
+ALTER TABLE estadisticas_entrenador_partido ALTER COLUMN tarjetas_amarillas_entrenador SET NOT NULL;
+ALTER TABLE estadisticas_entrenador_partido ALTER COLUMN numero_cambios SET NOT NULL;
+ALTER TABLE estadisticas_estadio_partido ALTER COLUMN asistencia SET NOT NULL;
+ALTER TABLE jugador ALTER COLUMN primer_nombre SET NOT NULL;
+ALTER TABLE jugador ALTER COLUMN primer_apellido SET NOT NULL;
+ALTER TABLE jugador ALTER COLUMN fecha_nacimient SET NOT NULL;
+ALTER TABLE estadisticas_jugador_partido ALTER COLUMN es_titular SET NOT NULL;
+ALTER TABLE estadisticas_jugador_partido ALTER COLUMN goles_partido SET NOT NULL;
+ALTER TABLE estadisticas_jugador_partido ALTER COLUMN minutos_jugados_partido SET NOT NULL;
+ALTER TABLE lesion ALTER COLUMN area_corporal SET NOT NULL;
+ALTER TABLE lesion ALTER COLUMN tiempo_recuperacion SET NOT NULL;
+ALTER TABLE cirugia ALTER COLUMN tipo_cirugia SET NOT NULL;
+ALTER TABLE estatus_lesion ALTER COLUMN temporada_lesion SET NOT NULL;
+ALTER TABLE estatus_lesion ALTER COLUMN esta_lesionado SET NOT NULL;
+ALTER TABLE desempenio_torneo ADD CHECK (goles_favor >= 0);
+ALTER TABLE desempenio_torneo ADD CHECK (goles_contra >= 0);
+ALTER TABLE desempenio_torneo ADD CHECK (victorias >= 0);
+ALTER TABLE desempenio_torneo ADD CHECK (empates >= 0);
+ALTER TABLE desempenio_torneo ADD CHECK (derrotas >= 0);
+ALTER TABLE desempenio_torneo ADD CHECK (puntos_totales >= 0);
+ALTER TABLE partido ADD CHECK (goles_local >= 0);
+ALTER TABLE partido ADD CHECK (goles_visita >= 0);
+ALTER TABLE partido ADD CHECK (humedad BETWEEN 0 AND 100);      
+ALTER TABLE entrenador ADD CHECK (estatura_ent > 0);
+ALTER TABLE jugador ADD CHECK (estatura > 0);
+ALTER TABLE estadisticas_jugador_partido ADD CHECK (goles_partido >= 0);
+ALTER TABLE estadisticas_jugador_partido ADD CHECK (km_recorridos >= 0);
+ALTER TABLE estadisticas_jugador_partido ADD CHECK (minutos_jugados_partido >= 0);
+ALTER TABLE estadisticas_jugador_partido ADD CHECK (pases_totales >= 0);
+ALTER TABLE estadisticas_jugador_partido ADD CHECK (pases_efectivos >= 0);
+ALTER TABLE estadisticas_jugador_partido ADD CHECK (tarjetas_amarillas >= 0);
+ALTER TABLE estadisticas_jugador_partido ADD CHECK (numero_camiseta > 0);
+ALTER TABLE estadisticas_entrenador_partido ADD CHECK (tarjetas_amarillas_entrenador >= 0);
+ALTER TABLE estadisticas_entrenador_partido ADD CHECK (numero_cambios >= 0);
+ALTER TABLE estadisticas_estadio_partido ADD CHECK (asistencia >= 0);
